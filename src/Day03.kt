@@ -53,7 +53,7 @@ fun main() {
     }
 
     fun part2(input: List<String>): Int {
-        var gears = mutableMapOf<Pair<Int, Int>, MutableList<Int>>( )
+        val gears = mutableMapOf<Pair<Int, Int>, MutableList<Int>>( )
         input.forEachIndexed { index, s ->
             val rg="""[^0-9]""".toRegex()
             val numbers = s.split(rg)

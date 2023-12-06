@@ -33,7 +33,6 @@ fun main() {
         val r = input.map {
             val colors = mutableMapOf("red" to 0, "green" to 0, "blue" to 0)
             val match = it.split(":")
-            var matchnum = match[0].substring(5).toInt()
             val games = match[1].split(",",";")
             games.forEach { g ->
 
@@ -61,7 +60,7 @@ fun main() {
     }
 
     // test if implementation meets criteria from the description, like:
-    val testInput = readInput("Day02_test")
+    //val testInput = readInput("Day02_test")
     //val i = part1(testInput)
     //println("i=$i")
     //check(part1(testInput) == 8)

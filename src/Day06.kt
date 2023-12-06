@@ -8,9 +8,6 @@ fun main() {
         times.forEachIndexed { index, t ->
             var n=0
             for (i in 1..t/2) {
-                val m = t-i
-                val p = i * (t-i)
-                val r = record.get(index)
                 if ( i * (t-i) > record.get(index)) {
                     n++
                 }
@@ -29,8 +26,6 @@ fun main() {
         val record = input.get(1).substring(10).replace(" ","").toLong()
         var n=0
         for (i in 1..t/2) {
-            val m = t-i
-            val p = i * (t-i)
             if ( i * (t-i) > record) {
                 n++
             }
