@@ -1,4 +1,4 @@
-typealias Pos = Pair<Int, Int>
+//typealias Pos = Pair<Int, Int>
 
 fun main() {
 //..F7.
@@ -46,14 +46,17 @@ fun main() {
 
     }
 
-
-    // s en 0,2
-    fun part1(input: List<String>): Int {
+    fun findChar(c:Char, input: List<String>): Pair<Int, Int> {
         var x= 0
         var y = input.indexOfFirst {
-            x = it.indexOf('S')
+            x = it.indexOf(c)
             x!= -1
         }
+        return Pair(y,x)
+    }
+    // s en 0,2
+    fun part1(input: List<String>): Int {
+        var (y,x) = findChar('S', input)
         var total = 0
         println("$x $y")
         var step = Pair(0,0)
@@ -71,61 +74,88 @@ fun main() {
         return total/2
     }
 
-    fun part2(input: List<String>): Int {
-        var x= 0
-        var y = input.indexOfFirst {
-            x = it.indexOf('S')
-            x!= -1
+    fun lastInLine(mapa : Array<Array<Char>>, y:Int, x:Int):Boolean {
+        for (j in x..<mapa[y].size) {
+            if (mapa[y][j]!='.') {
+                return false
+            }
         }
-        var total = 0
+        return true
+    }
+
+    fun grafico(c:Char) = when(c) {
+        'F' -> '⎾'
+        '7' -> '⏋'
+        'J' -> '⏌'
+        'L' -> '⎿'
+        '-' -> '⎯'
+        '|' -> '│'
+        else -> c
+    }
+    fun part2(input: List<String>): Int {
+
         val W = input.first().length
         val H = input.size
+        var mapa : Array<Array<Char>> = Array(H) {
+            Array(W) { '.'}
+        }
+        var (y,x) = findChar('S', input)
+        var total = 0
         println("$x $y")
-        var stepx = 0
-        var stepy = 0
+        var step = Pair(0,0)
         var c = 'S'
         do {
-            val (sy, sx) =  pipes.get(c)!!.filter { (dy,dx) ->
-                dy!=stepy*-1 || dx!=stepx*-1 }
-                .first { (dy, dx) ->
-                    val nx=x+dx
-                    val ny=y+dy
-                    if (nx>=0 && nx<W && ny>=0 && ny<H) {
-                        c = input[ny][nx]
-                        val step = pipes.get(c)
-                        val found = step?.firstOrNull { (cy, cx) ->
-                            cx == dx * -1 && cy == dy * -1
-                        }
-                        // if (found!=null)
-                        //     println("c:$c step: $step ")
-                        found!= null
-                    } else {
-                        false
-                    }
-                }
-            stepx = sx
-            stepy = sy
-            x+=stepx
-            y+=stepy
+            mapa[y][x]=c
+            //val (sy, sx) = nextStep(x,y, stepx, stepy, c, input)
+            step = nextStep(x,y, step, c, input)
+            x+=step.second
+            y+=step.first
             println("x:$x y=$y")
+            c=input[y][x]
             total++
-        } while(input[y][x]!='S')
-        return total/2
+        } while(c!='S')
+
+        var contI =0
+//        for (i in 0..<H) {
+//            var inside = 0
+//            for (j in 0..<W) {
+//                print(mapa[i][j])
+//            }
+//            println()
+//        }
+        for (i in 0..<H) {
+            var inside = 0
+            for (j in 0..<W) {
+                if (mapa[i][j]!='.') {
+                    inside++
+                }
+                if (inside % 2 ==1 && mapa[i][j]=='.' && !lastInLine(mapa, i,j)) {
+                    contI++
+                    mapa[i][j]='I'
+                }
+                print(mapa[i][j])
+
+            }
+            println()
+        }
+
+
+        return contI
     }
 
     val testInput = readInput("Day10_test")
     val i = part1(testInput)
     println("i=$i")
     check(i == 8)
-    //val testInput2 = readInput("Day10_test2")
-    //val j = part2(testInput2)
-    //println("j=$j")
-    //check(j == 4)
+    val testInput2 = readInput("Day10_test3")
+    val j = part2(testInput2)
+    println("j=$j")
+    check(j == 8)
 
     val input = readInput("Day10")
     part1(input).println()
     // 6738
 
-    //part2(input).println()
+    part2(input).println()
     // 8245452805243
 }
