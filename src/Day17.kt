@@ -74,7 +74,7 @@ fun main() {
                 Pair(-1,0) -> '^'
                 else -> '?'
             }
-            print("${city[y][x].heat},")
+            print("${city[current.y][current.x].heat},")
             layout[current.y][current.x]=c
             current= current.prev!!
         }
@@ -119,13 +119,13 @@ fun main() {
                     break;
                 }
                 h.added = true
-            layout = input.map {
-                it.toCharArray()
-            }
-            markPath(city, h.y, h.x)
-            println("-----")
-            printLayout(layout)
-                println("CURRENT y:${h.y} x:${h.x} d:${h.distance}")
+//            layout = input.map {
+//                it.toCharArray()
+//            }
+//            markPath(city, h.y, h.x)
+//            println("-----")
+//            printLayout(layout)
+                println("CURRENT y:${h.y} x:${h.x} d:${h.distance} heat: ${h.heat} tail:${h.dirTail}")
 
                 val p = h.prev
                 //val t = tail(h)
@@ -138,18 +138,20 @@ fun main() {
                         if (!(x0 < 0 || x0 >= layoutW || y0 < 0 || y0 >= layoutH)) {
                             if (p == null || (x0 != p.x || y0 != p.y)) {
                                 val next = city[y0][x0]
-                                var tailCond = (dir!=h.dir ||  h.dirTail<4)
+                                var tailCond = (dir!=h.dir ||  h.dirTail<3)
                                 if (!next.added && (next.distance > h.distance + next.heat) && tailCond) {
                                     next.distance = h.distance + next.heat
                                     next.prev = h
-                                    if (next.dir==h.dir) {
+                                    next.dir = dir
+
+                                    if (dir==h.dir) {
                                         next.dirTail = h.dirTail + 1
                                     } else {
-                                        next.dir = dir
                                         next.dirTail = 1
                                     }
-                                    println("UPDATE y:${next.y} x:${next.x} d:${next.distance} tail: ${next.dirTail}")
-
+                                    println("     UPDATE y:${next.y}  x:${next.x} d:${next.distance} heat:${next.heat} dir: ${next.dir} tail: ${next.dirTail} tailCond:${tailCond}")
+                                } else {
+                                    println("     NO     y:${next.y}  x:${next.x} d:${next.distance} heat:${next.heat} dir: ${next.dir} tail: ${next.dirTail} tailCond:${tailCond}")
                                 }
                             }
                         }
@@ -162,8 +164,9 @@ fun main() {
         println("-----")
         printLayout(layout)
         //val s = tail(city[4][layoutW-1])
-
-        return city[layoutH-1][layoutW-1].distance
+        //city[0][0].heat +
+        val result =  city[layoutH-1][layoutW-1].distance
+        return result
     }
 
     fun part2(input: List<String>): Int {
@@ -173,14 +176,16 @@ fun main() {
     val testInput = readInput("Day17_test")
     val i = part1(testInput)
     println("i=$i")
+
     check(i == 102)
-    val j = part2(testInput)
-    println("j=$j")
-    check(j == 51)
+    //val j = part2(testInput)
+    //println("j=$j")
+    //check(j == 51)
 
     val input = readInput("Day17")
     part1(input).println()
-    // 8389
+    // 768 too low
+    // 821 too high
 
     part2(input).println()
     //8564
