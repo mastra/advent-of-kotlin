@@ -1,7 +1,6 @@
-import kotlin.system.measureNanoTime
+import java.lang.Long.min
+import kotlin.math.abs
 import kotlin.system.measureTimeMillis
-import kotlin.time.measureTime
-
 
 fun main() {
 
@@ -210,18 +209,15 @@ fun main() {
         println("-----------------")
         var total = 0
         //1.000.000.000
-        var load = mutableMapOf<Int, Cycle>()
+        val load = mutableMapOf<Int, Cycle>()
         val d = measureTimeMillis {
-            for (i in 1..1000000)  {
+            for (i in 1..1000)  {
 
                 tiltNorth(platform, rockColumns)
                 tiltWest(platform, rockRows)
                 tiltSouth(platform, rockColumns)
                 tiltEast(platform, rockRows)
-//                if (i % 1000000 == 0) {
-//                    println("$i -------------------")
-//                    printPlatform(platform)
-//                }
+
             val l = northLoad(platform)
                 val v = load.get(l)
                 if (v== null) {
@@ -242,10 +238,10 @@ fun main() {
         val ls = load.toList().sortedByDescending { (_ , value) ->
             value.cont
         }.toMap()
+        var nearest = 10000L
         ls.filter{ (key,v) -> v.cont>10}.forEach { (key, v) ->
 
             val times = v.cont
-            val promedio = v.dif
             val start = v.start
             val dif1 = v.past[1]-v.past[0]
             val dif2 = v.past[2]-v.past[1]
@@ -261,24 +257,27 @@ fun main() {
                 a = (1000000000L-v.start).toDouble()/(dif1+dif2)
                 ai = (a.toLong()*(dif1+dif2) )+ start
             }
-
+            val distance = abs(1000000000L-ai)
+            if (distance<nearest) {
+                nearest= distance
+                total = key
+            }
             println("load: $key, times:$times start=$start dif1=$dif1 dif2=$dif2 sum=$sum a=$a ai=$ai")
         }
-        //printPlatform(platform)
-        total = northLoad(platform)
+        //total = northLoad(platform)
         return total
     }
 
     val testInput = readInput("Day14_test")
-    //val i = part1(testInput)
-    //println("i=$i")
+    val i = part1(testInput)
+    println("i=$i")
     //check(i == 136)
-    //val j = part2(testInput)
-    //println("j=$j")
-    //check(j == 64)
+    val j = part2(testInput)
+    println("j=$j")
+    check(j == 64)
 
     val input = readInput("Day14")
-    //part1(input).println()
+    part1(input).println()
     //109638
 
     part2(input).println()

@@ -47,8 +47,8 @@ fun main() {
     ) {
     }
 
-    fun Array<Array<Heat>>.findMinDistance() : Heat{
-        var h = this[0][0]
+    fun Array<Array<Heat>>.findMinDistance() : Heat? {
+        var h : Heat? = null
         var m = MAX
 
         for (y in 0..<this.size) {
@@ -114,7 +114,8 @@ fun main() {
 
         while (true) {
                 val h = city.findMinDistance()
-                if (h.y == layoutH-1 && h.x==layoutW-1) {
+                //if (h.y == layoutH-1 && h.x==layoutW-1) {
+                if (h==null) {
                     println("END")
                     break;
                 }

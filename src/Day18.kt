@@ -170,7 +170,6 @@ fun main() {
     part1(input).println()
     // 55677 too low
     //61661
-
+    println("part2")
     part2(input).println()
-    //8564
 }
