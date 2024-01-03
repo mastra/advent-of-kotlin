@@ -82,7 +82,7 @@ fun main() {
         r?.forEach {
             inputs.send(it)
         }
-        println("L: $low H: $high")
+        //println("L: $low H: $high")
     }
 
     fun part1(input: List<String>): Int {
@@ -141,6 +141,82 @@ fun main() {
     }
 
     fun part2(input: List<String>): Int {
+        low = 0
+        high =0
+        circuit = mutableMapOf()
+        inputs = mutableListOf()
+
+        input.forEach {
+            var (name, outs) = it.split(" -> ")
+            var op = 0
+            if (!name.first().isLetter()) {
+                op = if (name.first() == '%') 1 else 2
+                name = name.drop(1)
+            }
+            val o = outs.split(", ")
+            val m: Modulo = when (op) {
+                1 -> Modulo.FlipFlop(name, o, 0)
+                2 -> Modulo.Conjuction(name, o)
+                else -> Modulo.Pass(name, o)
+            }
+            circuit.put(name, m)
+        }
+
+        circuit.forEach { name,m ->
+            m.output.map { circuit.get(it) }
+                .forEach {
+                    if (it is Modulo.Conjuction) {
+                        it.addInput(name)
+                    }
+                }
+        }
+        val xm : Modulo.Conjuction = circuit.get("xm") as Modulo.Conjuction
+        val ciclos  = xm.state.map { (k,v) -> k to 0 }.toMap() as MutableMap<String, Int>
+        val found = mutableMapOf<String, Int>()
+        circuit.put("output", Modulo.Pass("output", emptyList()))
+        var i = 1
+        while (i<5000) {
+            inputs.send(Pulse("button", "broadcaster", 0, 1))
+
+            var cycle = 1
+            do {
+                val p = inputs.filter { pulse ->
+                    pulse.cycle == cycle
+                }
+                p.forEach { pulse ->
+
+                    //println("$cycle:${pulse.dest}]")
+                    pulse.runCycle()
+                    if (ciclos.get(pulse.dest)!=null && pulse.v == 0) {
+                        val ant = ciclos.get(pulse.dest)!!
+                        ciclos.put(pulse.dest, i)
+                        println("pulse : ${pulse.dest} i=${i-ant}")
+                        found.put(pulse.dest, i-ant)
+//                        if (ciclos.all { (k,v) ->
+//                            v>0
+//                            }) {
+//                            println("FINN")
+//                            return i
+//                        }
+                    }
+
+                }
+                inputs.removeAll(p)
+                cycle++
+            } while (inputs.isNotEmpty())
+
+            i++
+        }
+        found.forEach { t, u ->
+            println("Found cycles $t, $u")
+        }
+        //Found cycles ng, 3803
+        //Found cycles ft, 3877
+        //Found cycles sv, 3889
+        //Found cycles jz, 3917
+        println("calcular mcm !")
+        //224,602,011,344,203
+        //224602011344203
         return 0
     }
 
@@ -158,6 +234,7 @@ fun main() {
     val input = readInput("Day20")
     part1(input).println()
     //788081152
+
 
     part2(input).println()
 }
